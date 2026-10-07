@@ -17,3 +17,12 @@ jobs:
 
       - name: Test Pipeline
         run: echo "GitHub Actions triggered successfully!"
+
+      - name: Send repository information to backend
+        run: |
+          curl -X POST "https://renewed-share-tartar.ngrok-free.dev/analyze" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "repository": "${{ github.event.repository.name }}",
+            "commitId": "${{ github.sha }}"
+          }'

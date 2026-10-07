@@ -1,0 +1,19 @@
+name: Defect Prediction Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-pipeline:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Test Pipeline
+        run: echo "GitHub Actions triggered successfully!"

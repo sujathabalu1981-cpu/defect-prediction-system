@@ -1,0 +1,7 @@
+POST http://localhost:8081/analyze
+Content-Type: application/json
+
+{
+    "repository": "defect-prediction-system",
+    "commitId": "abc123"
+}

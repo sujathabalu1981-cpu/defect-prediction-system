@@ -21,20 +21,21 @@ jobs:
       - name: Analyze repository for defect risk
         id: defect-analysis
         run: |
-          response=$(curl -s -X POST "https://renewed-share-tartar.ngrok-free.dev/analyze" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "repository": "${{ github.event.repository.html_url }}",
-              "commitId": "${{ github.sha }}"
-            }')
+          set -e
+
+          response=$(curl -fsS -X POST "https://renewed-share-tartar.ngrok-free.dev/analyze" -H "Content-Type: application/json" -d '{"repository":"${{ github.event.repository.html_url }}","commitId":"${{ github.sha }}"}')
 
           echo "Backend response:"
           echo "$response"
 
           pipeline_action=$(echo "$response" | jq -r '.pipelineAction')
 
-          echo "Pipeline Action: $pipeline_action"
+          if [ -z "$pipeline_action" ] || [ "$pipeline_action" = "null" ]; then
+            echo "ERROR: Backend did not return a valid pipelineAction."
+            exit 1
+          fi
 
+          echo "Pipeline Action: $pipeline_action"
           echo "pipeline_action=$pipeline_action" >> "$GITHUB_OUTPUT"
 
       - name: Enforce pipeline decision
@@ -57,7 +58,13 @@ jobs:
             exit 0
           fi
 
-          echo "========================================"
-          echo "DEFECT RISK POLICY: ALLOW"
-          echo "========================================"
-          echo "No blocking defect risk detected."
+          if [ "${{ steps.defect-analysis.outputs.pipeline_action }}" = "ALLOW" ]; then
+            echo "========================================"
+            echo "DEFECT RISK POLICY: ALLOW"
+            echo "========================================"
+            echo "No blocking defect risk detected."
+            exit 0
+          fi
+
+          echo "ERROR: Unknown pipeline action: ${{ steps.defect-analysis.outputs.pipeline_action }}"
+          exit 1

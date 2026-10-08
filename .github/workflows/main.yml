@@ -23,7 +23,7 @@ jobs:
         run: |
           set -e
 
-          response=$(curl -fsS -X POST "https://renewed-share-tartar.ngrok-free.dev/analyze" -H "Content-Type: application/json" -d '{"repository":"${{ github.event.repository.html_url }}","commitId":"${{ github.sha }}"}')
+          response=$(curl -fsS -X POST "${{ secrets.DEFECT_API_URL }}/analyze" -H "Content-Type: application/json" -d '{"repository":"${{ github.event.repository.html_url }}","commitId":"${{ github.sha }}"}')
 
           echo "Backend response:"
           echo "$response"

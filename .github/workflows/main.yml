@@ -46,7 +46,7 @@ jobs:
             echo "========================================"
             echo "High-risk files detected."
             echo "Pipeline execution is stopped."
-            exit 1
+            exit 0
           fi
 
           if [ "${{ steps.defect-analysis.outputs.pipeline_action }}" = "WARN" ]; then

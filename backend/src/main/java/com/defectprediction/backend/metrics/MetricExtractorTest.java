@@ -4,7 +4,8 @@ import java.util.List;
 
 public class MetricExtractorTest {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args)
+            throws Exception {
 
         MetricExtractor extractor =
                 new MetricExtractor();
@@ -12,16 +13,32 @@ public class MetricExtractorTest {
         List<MetricResult> results =
                 extractor.extractMetrics(".");
 
+        System.out.println();
         System.out.println(
-                "===== SOFTWARE METRICS =====");
+                "========================================");
+
+        System.out.println(
+                "     COMPLETE SOFTWARE METRICS");
+
+        System.out.println(
+                "========================================");
 
         for (MetricResult result : results) {
 
-            System.out.println(
-                    "File: " + result.getFilePath());
+            System.out.println();
 
             System.out.println(
-                    "LOC: " + result.getLoc());
+                    "File: "
+                    + result.getFilePath());
+
+            System.out.println(
+                    "----------------------------------------");
+
+            // Existing metrics
+
+            System.out.println(
+                    "LOC: "
+                    + result.getLoc());
 
             System.out.println(
                     "Cyclomatic Complexity: "
@@ -43,9 +60,39 @@ public class MetricExtractorTest {
                     "Inheritance Depth: "
                     + result.getInheritanceDepth());
 
+            // Bayesian Network metrics
+
+            System.out.println();
+
             System.out.println(
-                    "---------------------------");
+                    "Essential Complexity: "
+                    + result.getEssentialComplexity());
+
+            System.out.println(
+                    "Design Complexity: "
+                    + result.getDesignComplexity());
+
+            System.out.println(
+                    "Halstead Volume: "
+                    + result.getHalsteadVolume());
+
+            System.out.println(
+                    "Halstead Difficulty: "
+                    + result.getHalsteadDifficulty());
+
+            System.out.println(
+                    "Halstead Effort: "
+                    + result.getHalsteadEffort());
+
+            System.out.println(
+                    "Branch Count: "
+                    + result.getBranchCount());
+
+            System.out.println(
+                    "========================================");
         }
+
+        System.out.println();
 
         System.out.println(
                 "Total files analyzed: "

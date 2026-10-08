@@ -2,25 +2,38 @@ package com.defectprediction.backend;
 
 import java.util.List;
 
-import com.defectprediction.backend.metrics.MetricResult;
-
 public class AnalysisResponse {
 
     private String repository;
     private String commitId;
-    private int totalFiles;
-    private List<MetricResult> metrics;
+
+    private int filesAnalyzed;
+    private int highRiskFiles;
+    private int mediumRiskFiles;
+    private int lowRiskFiles;
+
+    private String pipelineAction;
+
+    private List<String> predictions;
 
     public AnalysisResponse(
             String repository,
             String commitId,
-            int totalFiles,
-            List<MetricResult> metrics) {
+            int filesAnalyzed,
+            int highRiskFiles,
+            int mediumRiskFiles,
+            int lowRiskFiles,
+            String pipelineAction,
+            List<String> predictions) {
 
         this.repository = repository;
         this.commitId = commitId;
-        this.totalFiles = totalFiles;
-        this.metrics = metrics;
+        this.filesAnalyzed = filesAnalyzed;
+        this.highRiskFiles = highRiskFiles;
+        this.mediumRiskFiles = mediumRiskFiles;
+        this.lowRiskFiles = lowRiskFiles;
+        this.pipelineAction = pipelineAction;
+        this.predictions = predictions;
     }
 
     public String getRepository() {
@@ -31,11 +44,27 @@ public class AnalysisResponse {
         return commitId;
     }
 
-    public int getTotalFiles() {
-        return totalFiles;
+    public int getFilesAnalyzed() {
+        return filesAnalyzed;
     }
 
-    public List<MetricResult> getMetrics() {
-        return metrics;
+    public int getHighRiskFiles() {
+        return highRiskFiles;
+    }
+
+    public int getMediumRiskFiles() {
+        return mediumRiskFiles;
+    }
+
+    public int getLowRiskFiles() {
+        return lowRiskFiles;
+    }
+
+    public String getPipelineAction() {
+        return pipelineAction;
+    }
+
+    public List<String> getPredictions() {
+        return predictions;
     }
 }

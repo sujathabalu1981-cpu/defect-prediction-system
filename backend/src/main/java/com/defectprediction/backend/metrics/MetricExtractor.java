@@ -1,21 +1,28 @@
 package com.defectprediction.backend.metrics;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MetricExtractor {
 
     public List<MetricResult> extractMetrics(String projectPath)
-            throws IOException {
+            throws Exception {
 
-        ProjectScanner scanner = new ProjectScanner();
+        ProjectScanner scanner =
+                new ProjectScanner();
 
         LocCalculator locCalculator =
                 new LocCalculator();
 
-        CyclomaticComplexityCalculator complexityCalculator =
-                new CyclomaticComplexityCalculator();
+        JavaParserCyclomaticComplexityCalculator
+                complexityCalculator =
+                new JavaParserCyclomaticComplexityCalculator();
+
+        BranchCountCalculator branchCalculator =
+                new BranchCountCalculator();
+
+        HalsteadMetrics halsteadCalculator =
+                new HalsteadMetrics();
 
         CouplingCalculator couplingCalculator =
                 new CouplingCalculator();
@@ -37,6 +44,7 @@ public class MetricExtractor {
 
         for (String file : javaFiles) {
 
+            // Existing metrics
             int loc =
                     locCalculator.calculateLOC(file);
 
@@ -52,14 +60,34 @@ public class MetricExtractor {
                     cohesionCalculator.calculateCohesion(file);
 
             int codeChurn =
-        churnCalculator.calculateChurn(
-                file,
-                projectPath);
+                    churnCalculator.calculateChurn(
+                            file,
+                            projectPath);
 
             int inheritanceDepth =
                     inheritanceCalculator.calculateDepth(
                             file,
                             javaFiles);
+
+            // Bayesian Network metrics
+            int branchCount =
+                    branchCalculator.calculateBranchCount(file);
+
+            double halsteadVolume =
+                    halsteadCalculator.calculateVolume(file);
+
+            double halsteadDifficulty =
+                    halsteadCalculator.calculateDifficulty(file);
+
+            double halsteadEffort =
+                    halsteadCalculator.calculateEffort(file);
+
+            // Temporary AST-based approximations
+            int essentialComplexity =
+                    complexity;
+
+            int designComplexity =
+                    complexity;
 
             MetricResult result =
                     new MetricResult(
@@ -69,7 +97,14 @@ public class MetricExtractor {
                             coupling,
                             cohesion,
                             codeChurn,
-                            inheritanceDepth);
+                            inheritanceDepth,
+                            essentialComplexity,
+                            designComplexity,
+                            halsteadVolume,
+                            halsteadDifficulty,
+                            halsteadEffort,
+                            branchCount
+                    );
 
             results.add(result);
         }

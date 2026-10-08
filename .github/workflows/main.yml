@@ -18,11 +18,46 @@ jobs:
       - name: Test Pipeline
         run: echo "GitHub Actions triggered successfully!"
 
-      - name: Send repository information to backend
+      - name: Analyze repository for defect risk
+        id: defect-analysis
         run: |
-          curl -X POST "https://renewed-share-tartar.ngrok-free.dev/analyze" \
-          -H "Content-Type: application/json" \
-          -d '{
-            "repository": "${{ github.event.repository.name }}",
-            "commitId": "${{ github.sha }}"
-          }'
+          response=$(curl -s -X POST "https://renewed-share-tartar.ngrok-free.dev/analyze" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "repository": "${{ github.event.repository.html_url }}",
+              "commitId": "${{ github.sha }}"
+            }')
+
+          echo "Backend response:"
+          echo "$response"
+
+          pipeline_action=$(echo "$response" | jq -r '.pipelineAction')
+
+          echo "Pipeline Action: $pipeline_action"
+
+          echo "pipeline_action=$pipeline_action" >> "$GITHUB_OUTPUT"
+
+      - name: Enforce pipeline decision
+        run: |
+          if [ "${{ steps.defect-analysis.outputs.pipeline_action }}" = "BLOCK" ]; then
+            echo "========================================"
+            echo "DEFECT RISK POLICY: BLOCK"
+            echo "========================================"
+            echo "High-risk files detected."
+            echo "Pipeline execution is stopped."
+            exit 1
+          fi
+
+          if [ "${{ steps.defect-analysis.outputs.pipeline_action }}" = "WARN" ]; then
+            echo "========================================"
+            echo "DEFECT RISK POLICY: WARN"
+            echo "========================================"
+            echo "Medium-risk files detected."
+            echo "Pipeline continues with warning."
+            exit 0
+          fi
+
+          echo "========================================"
+          echo "DEFECT RISK POLICY: ALLOW"
+          echo "========================================"
+          echo "No blocking defect risk detected."
